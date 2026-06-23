@@ -1,3 +1,46 @@
 <resources>
     <string name="app_name">CityFlow</string>
+    <string name="app_tagline">Smart Walking Route Planner</string>
+
+    <string name="label_route_name">Route name (optional)</string>
+    <string name="route_name_hint">e.g. Saturday city walk</string>
+    <string name="label_time">Available walking time</string>
+    <string name="label_interests">Interests</string>
+    <string name="label_setting">Indoor / outdoor preference</string>
+    <string name="label_gps">Use my current GPS location</string>
+    <string name="minutes_value">%1$d minutes</string>
+
+    <string name="build_button">Build walking route</string>
+    <string name="places_button">Browse city places</string>
+    <string name="history_button">Saved routes</string>
+
+    <string name="route_result_title">Your walking route</string>
+    <string name="places_title">Offline city guide</string>
+    <string name="history_title">Saved routes</string>
+
+    <string name="start_source">Start point: %1$s</string>
+    <string name="source_gps">current GPS location</string>
+    <string name="source_fallback">city centre (fallback)</string>
+
+    <string name="route_summary">%1$d stops · %2$.1f km · %3$d min · %4$s</string>
+    <string name="stop_meta">%1$s · walk %2$d min · visit %3$d min</string>
+    <string name="stops_header">Route stops</string>
+    <string name="empty_route">No places fit the selected time. Try more time or fewer filters.</string>
+
+    <string name="rebuild_button">Rebuild route</string>
+    <string name="save_button">Save route</string>
+    <string name="route_rebuilt">Route rebuilt</string>
+    <string name="route_saved">Saved: %1$s</string>
+    <string name="nothing_to_save">No route to save</string>
+
+    <string name="motion_status">Motion: %1$s (shake to rebuild)</string>
+    <string name="light_status">Light: %1$d lux · %2$s</string>
+
+    <string name="place_category">%1$s · %2$s</string>
+
+    <string name="history_meta">%1$d stops · %2$.1f km · %3$d min · %4$s</string>
+    <string name="history_empty">No saved routes yet. Build a route and save it.</string>
+    <string name="clear_history">Clear history</string>
+
+    <string name="location_fallback">Location unavailable, using city centre</string>
 </resources>

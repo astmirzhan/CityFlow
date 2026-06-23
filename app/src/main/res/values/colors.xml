@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="cityflow_primary">#FF4A6FA5</color>
+    <color name="cityflow_accent">#FFE8743B</color>
+    <color name="cityflow_surface">#FFF4F6F9</color>
+    <color name="cityflow_text_secondary">#FF5F6B7A</color>
 </resources>
