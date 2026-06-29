@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.astmirzhan.cityflow.data.PlaceRepository
 import com.astmirzhan.cityflow.data.RouteHistoryRepository
+import com.astmirzhan.cityflow.data.SelectedCityRepository
 import com.astmirzhan.cityflow.domain.RoutePlanner
 import com.astmirzhan.cityflow.domain.SensorContextAdvisor
+import com.astmirzhan.cityflow.model.City
 import com.astmirzhan.cityflow.model.IndoorPreference
 import com.astmirzhan.cityflow.model.PlaceCategory
 import com.astmirzhan.cityflow.model.RoutePreferences
@@ -39,6 +41,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
     private var lightSensor: Sensor? = null
 
     private lateinit var basePreferences: RoutePreferences
+    private lateinit var selectedCity: City
     private var startLat = PlaceRepository.CITY_CENTER_LAT
     private var startLng = PlaceRepository.CITY_CENTER_LNG
     private var currentLux = SensorContextAdvisor.OUTDOOR_LUX_THRESHOLD
@@ -48,6 +51,15 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val city = SelectedCityRepository(this).getSelectedCity()
+        if (city == null) {
+            startActivity(Intent(this, CitySelectionActivity::class.java))
+            finish()
+            return
+        }
+        selectedCity = city
+
         setContentView(R.layout.activity_route_result)
 
         preview = findViewById(R.id.routePreview)
@@ -94,7 +106,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         val built = RoutePlanner.build(
             startLat = startLat,
             startLng = startLng,
-            places = PlaceRepository.all(),
+            places = PlaceRepository.getPlacesForCity(selectedCity.id),
             preferences = effectivePreferences(),
             firstStopChoices = firstStopChoices
         )
@@ -118,7 +130,8 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
             stopsList.visibility = View.VISIBLE
         }
         summary.text = getString(
-            R.string.route_summary,
+            R.string.route_summary_city,
+            selectedCity.name,
             built.stops.size,
             built.totalDistanceMeters / 1000.0,
             built.totalMinutes,
@@ -189,6 +202,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         const val EXTRA_LNG = "extra_lng"
         const val EXTRA_FROM_GPS = "extra_from_gps"
         const val EXTRA_NAME = "extra_name"
+        const val EXTRA_CITY_ID = "extra_city_id"
         const val EXTRA_SAVED_TITLE = "extra_saved_title"
 
         private const val SHAKE_COOLDOWN_MS = 1500L

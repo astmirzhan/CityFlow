@@ -17,7 +17,8 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.astmirzhan.cityflow.data.PlaceRepository
+import com.astmirzhan.cityflow.data.SelectedCityRepository
+import com.astmirzhan.cityflow.model.City
 import com.astmirzhan.cityflow.model.IndoorPreference
 import com.astmirzhan.cityflow.model.PlaceCategory
 import com.google.android.material.chip.Chip
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var progress: ProgressBar
 
     private val prefs by lazy { getSharedPreferences(PREFS, Context.MODE_PRIVATE) }
+    private lateinit var selectedCityRepository: SelectedCityRepository
+    private lateinit var selectedCity: City
 
     private val routeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -56,6 +59,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        selectedCityRepository = SelectedCityRepository(this)
+        val city = selectedCityRepository.getSelectedCity()
+        if (city == null) {
+            openCitySelection()
+            return
+        }
+        selectedCity = city
+
         setContentView(R.layout.activity_main)
 
         root = findViewById(R.id.main)
@@ -70,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         setupSpinner()
         setupSeek()
         restorePrefs()
+        showSelectedCity()
 
         findViewById<Button>(R.id.buildButton).setOnClickListener { onBuildClicked() }
         findViewById<Button>(R.id.placesButton).setOnClickListener {
@@ -78,6 +91,22 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.historyButton).setOnClickListener {
             startActivity(Intent(this, HistoryActivity::class.java))
         }
+        findViewById<Button>(R.id.changeCityButton).setOnClickListener { onChangeCityClicked() }
+    }
+
+    private fun showSelectedCity() {
+        findViewById<TextView>(R.id.selectedCityLabel).text =
+            getString(R.string.selected_city, selectedCity.name, selectedCity.country)
+    }
+
+    private fun onChangeCityClicked() {
+        selectedCityRepository.clearSelectedCity()
+        openCitySelection()
+    }
+
+    private fun openCitySelection() {
+        startActivity(Intent(this, CitySelectionActivity::class.java))
+        finish()
     }
 
     private fun setupCategories() {
@@ -142,8 +171,8 @@ class MainActivity : AppCompatActivity() {
     private fun launchRoute(useGps: Boolean) {
         progress.visibility = View.VISIBLE
         val location = if (useGps) lastKnownLocation() else null
-        val lat = location?.first ?: PlaceRepository.CITY_CENTER_LAT
-        val lng = location?.second ?: PlaceRepository.CITY_CENTER_LNG
+        val lat = location?.first ?: selectedCity.latitude
+        val lng = location?.second ?: selectedCity.longitude
 
         val intent = Intent(this, RouteResultActivity::class.java).apply {
             putExtra(RouteResultActivity.EXTRA_MINUTES, selectedMinutes())
@@ -153,6 +182,7 @@ class MainActivity : AppCompatActivity() {
             putExtra(RouteResultActivity.EXTRA_LNG, lng)
             putExtra(RouteResultActivity.EXTRA_FROM_GPS, location != null)
             putExtra(RouteResultActivity.EXTRA_NAME, nameInput.text.toString().trim())
+            putExtra(RouteResultActivity.EXTRA_CITY_ID, selectedCity.id)
         }
         progress.visibility = View.GONE
         routeLauncher.launch(intent)

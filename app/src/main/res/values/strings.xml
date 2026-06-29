@@ -43,4 +43,14 @@
     <string name="clear_history">Clear history</string>
 
     <string name="location_fallback">Location unavailable, using city centre</string>
+
+    <string name="choose_city_subtitle">Choose your walking city</string>
+    <string name="label_country">Country</string>
+    <string name="label_city">City</string>
+    <string name="continue_button">Continue</string>
+
+    <string name="selected_city">%1$s, %2$s</string>
+    <string name="change_city">Change city</string>
+    <string name="places_title_city">Offline guide · %1$s</string>
+    <string name="route_summary_city">%1$s · %2$d stops · %3$.1f km · %4$d min · %5$s</string>
 </resources>
