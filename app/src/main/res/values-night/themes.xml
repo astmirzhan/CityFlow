@@ -1,7 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.CityFlow" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/cityflow_primary_dark</item>
+        <item name="colorOnPrimary">@color/cityflow_on_primary_dark</item>
+        <item name="colorPrimaryContainer">@color/cityflow_primary_container_dark</item>
+        <item name="colorOnPrimaryContainer">@color/cityflow_on_primary_container_dark</item>
+        <item name="colorSecondary">@color/cityflow_accent_dark</item>
+        <item name="colorOnSecondary">@color/cityflow_on_primary_dark</item>
+        <item name="android:colorBackground">@color/cityflow_surface_dark</item>
+        <item name="colorSurface">@color/cityflow_card_dark</item>
+        <item name="colorOnSurface">@color/cityflow_text_primary_dark</item>
+        <item name="colorOnSurfaceVariant">@color/cityflow_text_secondary_dark</item>
+        <item name="colorOutline">@color/cityflow_outline_dark</item>
     </style>
 </resources>

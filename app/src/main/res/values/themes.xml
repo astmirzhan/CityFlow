@@ -1,9 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.CityFlow" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/cityflow_primary</item>
+        <item name="colorOnPrimary">@color/cityflow_on_primary</item>
+        <item name="colorPrimaryContainer">@color/cityflow_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/cityflow_on_primary_container</item>
+        <item name="colorSecondary">@color/cityflow_accent</item>
+        <item name="colorOnSecondary">@color/cityflow_on_accent</item>
+        <item name="android:colorBackground">@color/cityflow_surface</item>
+        <item name="colorSurface">@color/cityflow_card</item>
+        <item name="colorOnSurface">@color/cityflow_text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/cityflow_text_secondary</item>
+        <item name="colorOutline">@color/cityflow_outline</item>
     </style>
 
     <style name="Theme.CityFlow" parent="Base.Theme.CityFlow" />
+
+    <!-- Reusable text styles -->
+    <style name="TextAppearance.CityFlow.SectionLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
 </resources>

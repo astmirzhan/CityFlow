@@ -2,8 +2,34 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="cityflow_primary">#FF4A6FA5</color>
-    <color name="cityflow_accent">#FFE8743B</color>
-    <color name="cityflow_surface">#FFF4F6F9</color>
-    <color name="cityflow_text_secondary">#FF5F6B7A</color>
+
+    <!-- Brand (vibrant aurora: indigo → violet → pink, warm orange accent) -->
+    <color name="cityflow_primary">#FF6366F1</color>
+    <color name="cityflow_hero_start">#FF6366F1</color>
+    <color name="cityflow_hero_center">#FF9333EA</color>
+    <color name="cityflow_hero_end">#FFEC4899</color>
+    <color name="cityflow_accent">#FFF97316</color>
+    <color name="cityflow_surface">#FFF6F5FF</color>
+    <color name="cityflow_text_secondary">#FF5B5F73</color>
+
+    <!-- Light Material3 scheme -->
+    <color name="cityflow_on_primary">#FFFFFFFF</color>
+    <color name="cityflow_primary_container">#FFE6E6FE</color>
+    <color name="cityflow_on_primary_container">#FF2A2172</color>
+    <color name="cityflow_on_accent">#FFFFFFFF</color>
+    <color name="cityflow_card">#FFFFFFFF</color>
+    <color name="cityflow_text_primary">#FF1B1B2B</color>
+    <color name="cityflow_outline">#FFDFDDF7</color>
+
+    <!-- Dark Material3 scheme -->
+    <color name="cityflow_primary_dark">#FFA5B4FC</color>
+    <color name="cityflow_on_primary_dark">#FF1E1B4B</color>
+    <color name="cityflow_primary_container_dark">#FF3730A3</color>
+    <color name="cityflow_on_primary_container_dark">#FFE0E7FF</color>
+    <color name="cityflow_accent_dark">#FFFB923C</color>
+    <color name="cityflow_surface_dark">#FF11101D</color>
+    <color name="cityflow_card_dark">#FF1C1B2E</color>
+    <color name="cityflow_text_primary_dark">#FFECEBFB</color>
+    <color name="cityflow_text_secondary_dark">#FFA6A5C0</color>
+    <color name="cityflow_outline_dark">#FF3A3960</color>
 </resources>

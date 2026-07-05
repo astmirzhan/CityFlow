@@ -15,6 +15,7 @@
     <string name="history_button">Saved routes</string>
 
     <string name="route_result_title">Your walking route</string>
+    <string name="route_subtitle">Starts at stop 1</string>
     <string name="places_title">Offline city guide</string>
     <string name="history_title">Saved routes</string>
 
@@ -33,14 +34,17 @@
     <string name="route_saved">Saved: %1$s</string>
     <string name="nothing_to_save">No route to save</string>
 
-    <string name="motion_status">Motion: %1$s (shake to rebuild)</string>
-    <string name="light_status">Light: %1$d lux · %2$s</string>
+    <string name="motion_status">%1$s · shake to rebuild</string>
+    <string name="light_status">%1$d lux · %2$s</string>
 
     <string name="place_category">%1$s · %2$s</string>
 
     <string name="history_meta">%1$d stops · %2$.1f km · %3$d min · %4$s</string>
     <string name="history_empty">No saved routes yet. Build a route and save it.</string>
     <string name="clear_history">Clear history</string>
+    <string name="back_button">Back</string>
+    <string name="places_button_short">Places</string>
+    <string name="history_button_short">Saved</string>
 
     <string name="location_fallback">Location unavailable, using city centre</string>
 
