@@ -24,6 +24,10 @@ class PlacesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_places)
         title = getString(R.string.places_title_city, city.name)
 
+        findViewById<android.widget.Button>(R.id.backButton).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         val list = findViewById<RecyclerView>(R.id.placesList)
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = PlaceAdapter(PlaceRepository.getPlacesForCity(city.id))

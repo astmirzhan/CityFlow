@@ -26,6 +26,9 @@ class HistoryActivity : AppCompatActivity() {
         emptyLabel = findViewById(R.id.historyEmpty)
         list.layoutManager = LinearLayoutManager(this)
 
+        findViewById<Button>(R.id.backButton).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         findViewById<Button>(R.id.clearHistoryButton).setOnClickListener {
             repository.clear()
             render()
