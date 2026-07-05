@@ -15,19 +15,39 @@ object CityRepository {
             description = "Small historic German city for compact walking routes."
         ),
         City(
+            id = "berlin",
+            country = "Germany",
+            name = "Berlin",
+            // Mitte, close to Museum Island and the central landmarks.
+            latitude = 52.5175,
+            longitude = 13.3960,
+            description = "Germany's vibrant capital with iconic landmarks."
+        ),
+        City(
+            id = "munich",
+            country = "Germany",
+            name = "Munich",
+            // Marienplatz, the heart of the old town.
+            latitude = 48.1374,
+            longitude = 11.5755,
+            description = "Bavarian city with historic squares and parks."
+        ),
+        City(
             id = "astana",
             country = "Kazakhstan",
             name = "Astana",
-            latitude = 51.1694,
-            longitude = 71.4491,
+            // Nurzhol Boulevard axis — walking distance to the main landmarks.
+            latitude = 51.1282,
+            longitude = 71.4270,
             description = "Capital city of Kazakhstan with modern landmarks."
         ),
         City(
             id = "almaty",
             country = "Kazakhstan",
             name = "Almaty",
-            latitude = 43.2389,
-            longitude = 76.8897,
+            // Historic centre near Panfilov Park / Arbat — close to the place cluster.
+            latitude = 43.2570,
+            longitude = 76.9500,
             description = "Large cultural city near the mountains."
         )
     )
