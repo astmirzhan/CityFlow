@@ -51,10 +51,13 @@ object RoutePlanner {
                 }
             } ?: break
 
-            val distance = DistanceCalculator.haversineMeters(
+            // The first stop is the start of the walk: you begin there, so no
+            // approach distance/time is counted. Later stops walk from the previous one.
+            val isFirst = stops.isEmpty()
+            val distance = if (isFirst) 0.0 else DistanceCalculator.haversineMeters(
                 currentLat, currentLng, next.latitude, next.longitude
             )
-            val walk = walkMinutes(distance)
+            val walk = if (isFirst) 0 else walkMinutes(distance)
             val cost = walk + next.visitMinutes
 
             if (usedMinutes + cost > preferences.availableMinutes) {

@@ -17,7 +17,9 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.astmirzhan.cityflow.data.PlaceRepository
 import com.astmirzhan.cityflow.data.SelectedCityRepository
+import com.astmirzhan.cityflow.domain.DistanceCalculator
 import com.astmirzhan.cityflow.model.City
 import com.astmirzhan.cityflow.model.IndoorPreference
 import com.astmirzhan.cityflow.model.PlaceCategory
@@ -100,6 +102,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onChangeCityClicked() {
+        // Saved category filters may not exist in the new city, so reset them.
+        prefs.edit().remove(KEY_CATEGORIES).apply()
         selectedCityRepository.clearSelectedCity()
         openCitySelection()
     }
@@ -110,7 +114,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupCategories() {
-        PlaceCategory.entries.forEach { category ->
+        // Only offer categories that actually exist in the selected city, so a
+        // filter can never produce an empty route (e.g. "Old Town" in Berlin).
+        val available = PlaceRepository.getPlacesForCity(selectedCity.id)
+            .map { it.category }
+            .toSet()
+        PlaceCategory.entries.filter { it in available }.forEach { category ->
             val chip = Chip(this).apply {
                 text = category.label
                 isCheckable = true
@@ -170,7 +179,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchRoute(useGps: Boolean) {
         progress.visibility = View.VISIBLE
-        val location = if (useGps) lastKnownLocation() else null
+        // Ignore GPS fixes that are unreasonably far from the selected city
+        // (e.g. the emulator's default Googleplex location) and fall back to the city centre.
+        val location = if (useGps) lastKnownLocation()?.takeIf { isNearSelectedCity(it) } else null
+        if (useGps && location == null) {
+            Snackbar.make(root, getString(R.string.location_fallback), Snackbar.LENGTH_SHORT).show()
+        }
         val lat = location?.first ?: selectedCity.latitude
         val lng = location?.second ?: selectedCity.longitude
 
@@ -187,6 +201,12 @@ class MainActivity : AppCompatActivity() {
         progress.visibility = View.GONE
         routeLauncher.launch(intent)
     }
+
+    private fun isNearSelectedCity(location: Pair<Double, Double>): Boolean =
+        DistanceCalculator.haversineMeters(
+            location.first, location.second,
+            selectedCity.latitude, selectedCity.longitude
+        ) <= MAX_GPS_DISTANCE_METERS
 
     private fun lastKnownLocation(): Pair<Double, Double>? {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -237,5 +257,8 @@ class MainActivity : AppCompatActivity() {
         private const val MIN_MINUTES = 30
         private const val MAX_MINUTES = 240
         private const val STEP_MINUTES = 15
+
+        // A GPS fix further than this from the selected city is treated as invalid.
+        private const val MAX_GPS_DISTANCE_METERS = 30_000.0
     }
 }

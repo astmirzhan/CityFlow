@@ -13,11 +13,11 @@ class RouteHistoryRepository(context: Context) {
     private val prefs = context.applicationContext
         .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    fun saveRoute(route: WalkingRoute): RouteHistoryItem {
+    fun saveRoute(route: WalkingRoute, customName: String? = null): RouteHistoryItem {
         val item = RouteHistoryItem(
             id = UUID.randomUUID().toString(),
             createdAt = System.currentTimeMillis(),
-            title = buildTitle(route),
+            title = customName?.trim()?.takeIf { it.isNotEmpty() } ?: buildTitle(route),
             stopCount = route.stops.size,
             totalDistanceMeters = route.totalDistanceMeters,
             totalMinutes = route.totalMinutes,

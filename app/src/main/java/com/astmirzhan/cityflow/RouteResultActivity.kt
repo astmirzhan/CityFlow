@@ -44,7 +44,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var selectedCity: City
     private var startLat = PlaceRepository.CITY_CENTER_LAT
     private var startLng = PlaceRepository.CITY_CENTER_LNG
-    private var currentLux = SensorContextAdvisor.OUTDOOR_LUX_THRESHOLD
+    private var routeName: String = ""
     private var lastShakeAt = 0L
 
     private var route: WalkingRoute? = null
@@ -76,6 +76,9 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
 
+        findViewById<Button>(R.id.backButton).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         findViewById<Button>(R.id.rebuildButton).setOnClickListener { rebuild() }
         findViewById<Button>(R.id.saveButton).setOnClickListener { saveRoute() }
 
@@ -90,24 +93,19 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         startLat = intent.getDoubleExtra(EXTRA_LAT, PlaceRepository.CITY_CENTER_LAT)
         startLng = intent.getDoubleExtra(EXTRA_LNG, PlaceRepository.CITY_CENTER_LNG)
         basePreferences = RoutePreferences(minutes, categories, indoor)
+        routeName = intent.getStringExtra(EXTRA_NAME)?.trim().orEmpty()
 
-        val fromGps = intent.getBooleanExtra(EXTRA_FROM_GPS, false)
-        val source = if (fromGps) getString(R.string.source_gps) else getString(R.string.source_fallback)
         title = getString(R.string.route_result_title)
-        findViewById<TextView>(R.id.sourceLabel).text = getString(R.string.start_source, source)
     }
 
-    private fun effectivePreferences(): RoutePreferences {
-        val refined = SensorContextAdvisor.refinePreference(basePreferences.indoorPreference, currentLux)
-        return basePreferences.copy(indoorPreference = refined)
-    }
-
+    // The route is always built with the user's explicit preferences.
+    // Sensor readings are shown as context hints only and never override the user's choice.
     private fun buildRoute(firstStopChoices: Int) {
         val built = RoutePlanner.build(
             startLat = startLat,
             startLng = startLng,
             places = PlaceRepository.getPlacesForCity(selectedCity.id),
-            preferences = effectivePreferences(),
+            preferences = basePreferences,
             firstStopChoices = firstStopChoices
         )
         route = built
@@ -135,7 +133,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
             built.stops.size,
             built.totalDistanceMeters / 1000.0,
             built.totalMinutes,
-            effectivePreferences().indoorPreference.name.lowercase()
+            basePreferences.indoorPreference.name.lowercase()
         )
     }
 
@@ -145,7 +143,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
             Snackbar.make(preview, getString(R.string.nothing_to_save), Snackbar.LENGTH_SHORT).show()
             return
         }
-        val item = RouteHistoryRepository(this).saveRoute(current)
+        val item = RouteHistoryRepository(this).saveRoute(current, routeName)
         val data = Intent().putExtra(EXTRA_SAVED_TITLE, item.title)
         setResult(RESULT_OK, data)
         Snackbar.make(preview, getString(R.string.route_saved, item.title), Snackbar.LENGTH_SHORT).show()
@@ -186,7 +184,6 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun handleLight(lux: Float) {
-        currentLux = lux
         lightStatus.text = getString(
             R.string.light_status, lux.toInt(), SensorContextAdvisor.lightLabel(lux)
         )
