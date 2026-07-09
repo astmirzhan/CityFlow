@@ -4,6 +4,7 @@ import android.content.Context
 import com.astmirzhan.cityflow.model.RouteHistoryItem
 import com.astmirzhan.cityflow.model.WalkingRoute
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.util.UUID
 
@@ -31,12 +32,18 @@ class RouteHistoryRepository(context: Context) {
 
     fun loadHistory(): List<RouteHistoryItem> {
         val raw = prefs.getString(KEY_HISTORY, null) ?: return emptyList()
-        val array = JSONArray(raw)
-        val result = ArrayList<RouteHistoryItem>(array.length())
-        for (i in 0 until array.length()) {
-            result.add(fromJson(array.getJSONObject(i)))
+        return try {
+            val array = JSONArray(raw)
+            val result = ArrayList<RouteHistoryItem>(array.length())
+            for (i in 0 until array.length()) {
+                result.add(fromJson(array.getJSONObject(i)))
+            }
+            result
+        } catch (e: JSONException) {
+            // Corrupt or outdated data: discard it instead of crashing.
+            prefs.edit().remove(KEY_HISTORY).apply()
+            emptyList()
         }
-        return result
     }
 
     fun clear() {
