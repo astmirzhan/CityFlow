@@ -1,104 +1,91 @@
 # CityFlow — Smart Walking Route Planner
 
 ## Overview
-**CityFlow** is an intelligent walking route planner designed for urban explorers who want a curated, time-optimized experience without the hassle of manual planning. By considering user preferences, available time, and the physical environment via device sensors, CityFlow generates logical walking paths through a city's best spots.
+**CityFlow** is an offline walking-route assistant. The user picks a city, sets how much time they have and what they are interested in, and the app builds a logical walking route through the city's best spots that fits the time budget. Everything — the places dataset, the route calculation and the history — lives on the device: no internet connection is used or required (the manifest requests no `INTERNET` permission).
 
 ## Project Idea
-Unlike traditional travel apps that merely list points of interest, CityFlow focuses on the *journey*. It solves the "what should I do for the next 2 hours?" problem by automatically constructing a sequence of stops that fit perfectly into the user's schedule. The app operates entirely offline, using a local curated dataset and local calculations to ensure privacy, speed, and reliability regardless of data connectivity.
+Unlike travel apps that merely list points of interest, CityFlow solves the "what should I do for the next 2 hours?" problem: it automatically constructs a sequence of stops that fits the user's schedule. The offline-first design means privacy, instant results and full functionality without any data connectivity.
 
 ## Key Features
-*   **Time-Based Planning:** Specify how many minutes you have, and the app fills them efficiently.
-*   **Interest Filtering:** Filter routes by categories such as Culture, Nature, Food, or Landmarks.
-*   **Environment Preference:** Choose between Indoor, Outdoor, or Mixed routes.
-*   **Intelligent Location:** Use real-time GPS coordinates or a stable city-center fallback.
-*   **Live Route Visualization:** View the planned path on a custom `RoutePreviewView`.
-*   **Context Awareness:** Adapts recommendations based on ambient light and movement.
-*   **History & Exploration:** Save favorite routes and browse the entire local places dataset.
+*   **City Onboarding:** A dedicated first-launch flow for picking a country and city (5 cities: Schmalkalden, Berlin, Munich, Astana, Almaty).
+*   **Time-Based Planning:** Choose 30–240 minutes; the planner fills the budget efficiently.
+*   **Interest Filtering:** Category chips (Museums, Parks, Cafes, …) — only categories that actually exist in the selected city are offered, so a filter can never produce an empty route.
+*   **Environment Preference:** Indoor, Outdoor, or Any.
+*   **GPS Start (optional):** With GPS enabled, the user's real position is used as the start of the walk — the nearest place is chosen first **and the walking time to it is counted**. Without GPS the walk simply begins at stop 1.
+*   **Route Timeline:** A custom-drawn `RoutePreviewView` shows the route as a clean numbered timeline; with a GPS start an extra "You" node marks the real starting point.
+*   **Sensor Context:** Shake to rebuild the route; ambient light produces an indoor/outdoor suggestion.
+*   **History:** Save routes (with an optional custom name) and browse them later.
 
-## Screens
-*   **MainActivity:** The "Control Center" where users set their time budget, select interests, toggle GPS, and configure route preferences.
-*   **RouteResultActivity:** Displays the generated route summary, the visual preview, a detailed list of stops, and provides options to save or rebuild the route.
-*   **PlacesActivity:** A comprehensive list of all locations in the local curated dataset.
-*   **HistoryActivity:** A gallery of previously saved walking routes for easy reference.
+## Screens (5 Activities)
+*   **CitySelectionActivity:** Onboarding — country and city selection, stored persistently.
+*   **MainActivity:** The control center — route name, time budget, interests, indoor/outdoor, GPS toggle.
+*   **RouteResultActivity:** The generated route — timeline preview, summary, sensor status, rebuild/save. Returns the saved route's title back to MainActivity via `setResult`.
+*   **PlacesActivity:** The full curated place list for the selected city.
+*   **HistoryActivity:** Saved routes with clear-history support.
+
+All child screens include an explicit Back button in addition to system back navigation.
 
 ## How the Route Planner Works
-The core logic resides in the `RoutePlanner` domain component:
-1.  **Filtering:** Candidates are selected from the local dataset based on user-selected categories and indoor/outdoor preferences.
-2.  **Distance Calculation:** Uses the **Haversine formula** to calculate the "as-the-crow-flies" distance between coordinates on the Earth's surface.
-3.  **Time Estimation:** Assumes a standard walking speed of **5 km/h** and adds the predefined `visitTime` for each stop.
-4.  **Greedy Optimization:** Employs a nearest-neighbour algorithm to pick the next logical stop that minimizes walking distance while staying within the remaining time budget.
-5.  **Deterministic Logic:** Routes are built step-by-step until no more places can be added without exceeding the time limit.
+The core logic lives in the `RoutePlanner` domain object:
+1.  **Filtering:** Candidates are filtered by selected categories and indoor/outdoor preference.
+2.  **Distance:** The **Haversine formula** computes distances between coordinates (`DistanceCalculator`).
+3.  **Time model:** Walking speed **5 km/h** plus each place's predefined `visitMinutes`.
+4.  **Greedy nearest-neighbour:** The next stop is always the closest remaining candidate that still fits into the time budget.
+5.  **Start semantics:** Without GPS, the first selected place *is* the start of the walk (its approach time is 0). With a GPS start the first leg — from the user's position to the first stop — is real and is included in the budget.
+6.  **Rebuild variety:** "Rebuild" (button or shake) picks the first stop randomly among the 3 nearest candidates, producing route variations.
 
-## Sensors Used
-CityFlow leverages hardware sensors to enhance the user experience:
-*   **Light Sensor:** Reads ambient brightness (Lux). If the environment is very bright or dark, the `SensorContextAdvisor` provides context-aware suggestions for indoor or outdoor settings.
-*   **Accelerometer:** Monitors for movement or sudden shakes. A shake gesture can be used to "shake up" the current plan and trigger a route rebuild, adding an interactive element to the discovery process.
-
-## Location Handling
-The app is designed to be robust:
-*   **GPS Integration:** Requests `ACCESS_FINE_LOCATION` permission to start the route from the user's actual position.
-*   **Smart Fallback:** If permissions are denied or the GPS signal is lost (common in emulators or deep indoors), the app seamlessly falls back to a default city-center coordinate. This ensures the app remains functional in all testing environments.
+## Sensors Used (3)
+*   **Accelerometer:** Motion state display; a shake gesture rebuilds the route.
+*   **Light Sensor:** Shows ambient lux and, when the preference is "Any", suggests indoor/outdoor ("try indoor") — a hint only, it never overrides the user's explicit choice.
+*   **GPS / Location (`LocationManager`):** Optional start point. A sanity check rejects fixes further than 30 km from the selected city (e.g. the emulator's default Googleplex location) and falls back to the city centre with a notice.
 
 ## Local Places Dataset
-CityFlow relies on a **local curated places dataset**. This is an offline collection of high-quality city locations, including:
-*   Precise GPS coordinates.
-*   Category tags (Museums, Parks, etc.).
-*   Average visit duration.
-*   User ratings.
-*   Indoor/Outdoor classification.
+A curated offline dataset (`CityRepository`, `PlaceRepository`): 5 cities, each with 6–12 real places — precise coordinates, category, indoor/outdoor flag, average visit duration and a short description.
 
 ## Data Storage
-*   **Places:** Encapsulated within the `PlaceRepository` as a static, curated list.
-*   **Route History:** Saved routes are serialized into JSON and stored locally using `SharedPreferences`. This allows for lightweight, persistent storage without the need for a complex database or cloud synchronization.
+*   **Selected city & form state:** `SharedPreferences` (restored between launches; category filters reset on city change).
+*   **Route history:** Routes serialized to JSON in `SharedPreferences` (up to 30 items); corrupt data is discarded safely instead of crashing.
+
+## Design
+*   Material 3 theme with a vibrant indigo→violet→pink gradient brand, orange accent.
+*   Full **light and dark mode** support via semantic theme tokens; the custom view resolves its colors from the theme at runtime.
+*   Vector icons only, card-based layout, 44dp+ touch targets.
 
 ## Tech Stack
 *   **Language:** Kotlin
-*   **UI Framework:** Android XML Views with AppCompat & Material Components
-*   **Components:** RecyclerView (with custom adapters), CardView, ConstraintLayout
-*   **Data Handling:** `org.json` for serialization
-*   **Hardware APIs:** `LocationManager`, `SensorManager`
-*   **Custom Views:** `RoutePreviewView` for canvas-based path drawing
-*   **Testing:** JUnit 4 for domain logic validation
-
-## Project Structure
-*   **`model`**: Data classes like `Place`, `WalkingRoute`, and `RouteStop`.
-*   **`data`**: Repositories managing the curated dataset and history storage.
-*   **`domain`**: The "brain" of the app (Distance calculations, Route planning, Sensor logic).
-*   **`ui`**: Custom RecyclerView adapters for places, stops, and history.
-*   **`view`**: The `RoutePreviewView` custom component.
-*   **`activities`**: Flow management and user interaction logic.
+*   **UI:** Android XML Views, Material Components (Chips, MaterialSwitch, SeekBar, Spinner, Cards), RecyclerView with custom adapters
+*   **Custom View:** `RoutePreviewView` — Canvas-drawn route timeline
+*   **Hardware:** `SensorManager` (accelerometer, light), `LocationManager` (GPS)
+*   **Persistence:** `SharedPreferences` + `org.json`
+*   **Testing:** JUnit 4 — planner logic, distance math, per-city route scenarios
 
 ## University Requirements Coverage
-This project fulfills the following technical requirements:
-*   **Activities:** 4 distinct Activities with Intent-based data passing.
-*   **Modern API Usage:** `ActivityResultLauncher` for permissions and result handling.
-*   **Complex UI:** Extensive use of `RecyclerView` and various Material Design components (Chips, Switches, SeekBars).
-*   **Custom Graphics:** Implementation of a `Custom View` using Android's `Canvas` API.
-*   **Sensor Integration:** Multi-sensor usage (Light & Accelerometer).
-*   **Persistence:** Local storage via `SharedPreferences`.
-*   **Platform Support:** Fully compatible with Android API 34 through 36.
+*   **Activities:** 5 Activities with Intent-based data passing, including result data returned back (`ActivityResultLauncher` / `setResult`).
+*   **CustomView:** Canvas-based `RoutePreviewView` inside RouteResultActivity.
+*   **RecyclerView:** Three list screens with custom adapters.
+*   **Sensors:** Three sensors read and used (accelerometer, light, GPS).
+*   **UI variety:** Chips, Switch, SeekBar, Spinner, ProgressBar, Snackbar, Cards.
+*   **Persistence:** SharedPreferences.
+*   **Platform:** Kotlin, compile/target SDK 36 (runs on API 34–36 as required; minSdk 24).
 
 ## How to Run
-1.  Open the project in **Android Studio (Ladybug or newer)**.
-2.  Sync Gradle files.
-3.  Run the `app` module on an emulator (API 34+) or a physical device.
-4.  Ensure Location permissions are granted when prompted for the best experience.
+1.  Open the project in **Android Studio** (2025.x or newer).
+2.  Sync Gradle and run the `app` module on an emulator (API 34+) or a device.
+3.  Optional: enable the GPS switch and grant the location permission. In the emulator, set a location near the selected city (Extended Controls → Location), otherwise the app falls back to the city centre.
 
 ## How to Test
-The project includes unit tests for the core algorithm:
-1.  Navigate to `app/src/test/java`.
-2.  Run `RoutePlannerTest` to verify route building logic and time budget constraints.
-3.  Run `DistanceCalculatorTest` to verify the accuracy of the Haversine implementation.
+Run the unit tests in `app/src/test`:
+*   `RoutePlannerTest` — budget limits, ordering, filters, GPS-vs-centre start semantics.
+*   `CityRouteScenariosTest` — every city must produce a non-empty route for 30/60/90/240 min and for indoor/outdoor preferences.
+*   `DistanceCalculatorTest` — Haversine accuracy.
 
 ## Limitations
-*   **No Map SDK:** The app visualizes routes using a simplified custom view rather than Google Maps or Mapbox.
-*   **Simplified Routing:** Distance is calculated as a straight line; actual street-level sidewalk geometry is not considered.
-*   **Static Dataset:** Only includes the curated places provided in the local repository.
-*   **GPS in Emulators:** May require manual coordinate input or rely on the city-center fallback.
+*   Straight-line (Haversine) distances; street geometry is not considered.
+*   The schematic timeline replaces a real map SDK by design (offline-first).
+*   The dataset is curated and static.
 
 ## Future Improvements
-*   **Expanded Data:** Adding more cities and a larger variety of local places.
-*   **Onboarding:** A dedicated flow for selecting cities and setting initial preferences.
-*   **Map Integration:** Transitioning from the custom preview to a real-world map provider.
-*   **Advanced Optimization:** Implementing more complex algorithms like A* or Genetic Algorithms for better path optimization.
-*   **Live Weather Integration:** Adjusting routes based on real-time weather forecasts.
+*   Real map rendering as an optional online mode.
+*   Larger dataset and more cities.
+*   Smarter optimization (2-opt / simulated annealing) over the greedy heuristic.
+*   Weather-aware suggestions.
