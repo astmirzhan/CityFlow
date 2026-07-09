@@ -11,19 +11,13 @@
     <string name="minutes_value">%1$d minutes</string>
 
     <string name="build_button">Build walking route</string>
-    <string name="places_button">Browse city places</string>
-    <string name="history_button">Saved routes</string>
 
     <string name="route_result_title">Your walking route</string>
     <string name="route_subtitle">Starts at stop 1</string>
+    <string name="route_subtitle_gps">Starts at your location</string>
     <string name="places_title">Offline city guide</string>
     <string name="history_title">Saved routes</string>
 
-    <string name="start_source">Start point: %1$s</string>
-    <string name="source_gps">current GPS location</string>
-    <string name="source_fallback">city centre (fallback)</string>
-
-    <string name="route_summary">%1$d stops · %2$.1f km · %3$d min · %4$s</string>
     <string name="stop_meta">%1$s · walk %2$d min · visit %3$d min</string>
     <string name="stops_header">Route stops</string>
     <string name="empty_route">No places fit the selected time. Try more time or fewer filters.</string>
@@ -36,6 +30,7 @@
 
     <string name="motion_status">%1$s · shake to rebuild</string>
     <string name="light_status">%1$d lux · %2$s</string>
+    <string name="light_suggestion"> · try %1$s</string>
 
     <string name="place_category">%1$s · %2$s</string>
 

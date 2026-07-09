@@ -17,13 +17,17 @@ object RoutePlanner {
         (distanceMeters / METERS_PER_MINUTE).roundToInt()
 
     // Greedy nearest-neighbour route that fits inside the available time budget.
+    // countFirstLeg: when the start is the user's real GPS position, the walk to the
+    // first stop is real and is counted; for the abstract city-centre start the
+    // first stop is treated as the beginning of the walk (walk 0).
     fun build(
         startLat: Double,
         startLng: Double,
         places: List<Place>,
         preferences: RoutePreferences,
         firstStopChoices: Int = 1,
-        random: Random = Random.Default
+        random: Random = Random.Default,
+        countFirstLeg: Boolean = false
     ): WalkingRoute {
         val candidates = places
             .filter { preferences.categories.isEmpty() || it.category in preferences.categories }
@@ -51,13 +55,11 @@ object RoutePlanner {
                 }
             } ?: break
 
-            // The first stop is the start of the walk: you begin there, so no
-            // approach distance/time is counted. Later stops walk from the previous one.
-            val isFirst = stops.isEmpty()
-            val distance = if (isFirst) 0.0 else DistanceCalculator.haversineMeters(
+            val isFreeFirstLeg = stops.isEmpty() && !countFirstLeg
+            val distance = if (isFreeFirstLeg) 0.0 else DistanceCalculator.haversineMeters(
                 currentLat, currentLng, next.latitude, next.longitude
             )
-            val walk = if (isFirst) 0 else walkMinutes(distance)
+            val walk = if (isFreeFirstLeg) 0 else walkMinutes(distance)
             val cost = walk + next.visitMinutes
 
             if (usedMinutes + cost > preferences.availableMinutes) {

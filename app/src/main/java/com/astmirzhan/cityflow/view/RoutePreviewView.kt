@@ -79,8 +79,13 @@ class RoutePreviewView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
 
-    fun setRoute(route: WalkingRoute) {
-        nodes = route.stops.map { Node(it.order.toString(), it.place.name, isStart = false) }
+    // showStart: when the route begins at the user's real GPS position, a "You"
+    // node is drawn before the first stop; the city-centre start stays implicit.
+    fun setRoute(route: WalkingRoute, showStart: Boolean = false) {
+        nodes = buildList {
+            if (showStart && route.stops.isNotEmpty()) add(Node("", "You", isStart = true))
+            route.stops.forEach { add(Node(it.order.toString(), it.place.name, isStart = false)) }
+        }
         invalidate()
     }
 

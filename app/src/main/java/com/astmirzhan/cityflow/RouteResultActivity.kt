@@ -45,6 +45,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
     private var startLat = PlaceRepository.CITY_CENTER_LAT
     private var startLng = PlaceRepository.CITY_CENTER_LNG
     private var routeName: String = ""
+    private var fromGps = false
     private var lastShakeAt = 0L
 
     private var route: WalkingRoute? = null
@@ -94,8 +95,12 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         startLng = intent.getDoubleExtra(EXTRA_LNG, PlaceRepository.CITY_CENTER_LNG)
         basePreferences = RoutePreferences(minutes, categories, indoor)
         routeName = intent.getStringExtra(EXTRA_NAME)?.trim().orEmpty()
+        fromGps = intent.getBooleanExtra(EXTRA_FROM_GPS, false)
 
         title = getString(R.string.route_result_title)
+        findViewById<TextView>(R.id.routeSubtitle).text = getString(
+            if (fromGps) R.string.route_subtitle_gps else R.string.route_subtitle
+        )
     }
 
     // The route is always built with the user's explicit preferences.
@@ -106,7 +111,8 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
             startLng = startLng,
             places = PlaceRepository.getPlacesForCity(selectedCity.id),
             preferences = basePreferences,
-            firstStopChoices = firstStopChoices
+            firstStopChoices = firstStopChoices,
+            countFirstLeg = fromGps
         )
         route = built
         renderRoute(built)
@@ -118,7 +124,7 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun renderRoute(built: WalkingRoute) {
-        preview.setRoute(built)
+        preview.setRoute(built, showStart = fromGps)
         stopsList.adapter = RouteStopAdapter(built.stops)
         if (built.isEmpty) {
             emptyLabel.visibility = View.VISIBLE
@@ -184,9 +190,19 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun handleLight(lux: Float) {
-        lightStatus.text = getString(
+        val base = getString(
             R.string.light_status, lux.toInt(), SensorContextAdvisor.lightLabel(lux)
         )
+        // The light sensor drives a non-destructive suggestion: when the user left the
+        // setting on "Any", bright/dark surroundings hint at a better indoor/outdoor choice.
+        val suggested = SensorContextAdvisor.refinePreference(basePreferences.indoorPreference, lux)
+        lightStatus.text = if (basePreferences.indoorPreference == IndoorPreference.ANY &&
+            suggested != IndoorPreference.ANY
+        ) {
+            base + getString(R.string.light_suggestion, suggested.name.lowercase())
+        } else {
+            base
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -197,9 +213,8 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         const val EXTRA_INDOOR = "extra_indoor"
         const val EXTRA_LAT = "extra_lat"
         const val EXTRA_LNG = "extra_lng"
-        const val EXTRA_FROM_GPS = "extra_from_gps"
         const val EXTRA_NAME = "extra_name"
-        const val EXTRA_CITY_ID = "extra_city_id"
+        const val EXTRA_FROM_GPS = "extra_from_gps"
         const val EXTRA_SAVED_TITLE = "extra_saved_title"
 
         private const val SHAKE_COOLDOWN_MS = 1500L

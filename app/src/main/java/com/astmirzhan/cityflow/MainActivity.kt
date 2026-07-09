@@ -194,9 +194,8 @@ class MainActivity : AppCompatActivity() {
             putExtra(RouteResultActivity.EXTRA_INDOOR, selectedIndoorPreference().name)
             putExtra(RouteResultActivity.EXTRA_LAT, lat)
             putExtra(RouteResultActivity.EXTRA_LNG, lng)
-            putExtra(RouteResultActivity.EXTRA_FROM_GPS, location != null)
             putExtra(RouteResultActivity.EXTRA_NAME, nameInput.text.toString().trim())
-            putExtra(RouteResultActivity.EXTRA_CITY_ID, selectedCity.id)
+            putExtra(RouteResultActivity.EXTRA_FROM_GPS, location != null)
         }
         progress.visibility = View.GONE
         routeLauncher.launch(intent)

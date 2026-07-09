@@ -49,6 +49,25 @@ class RoutePlannerTest {
     }
 
     @Test
+    fun cityCentreStartTreatsFirstStopAsBeginning() {
+        val prefs = RoutePreferences(120, emptySet(), IndoorPreference.ANY)
+        val route = RoutePlanner.build(start.first, start.second, PlaceRepository.all(), prefs)
+        assertEquals(0, route.stops.first().walkMinutesFromPrevious)
+    }
+
+    @Test
+    fun gpsStartCountsWalkToFirstStop() {
+        // Start away from the nearest place so the first leg has a real cost.
+        val prefs = RoutePreferences(240, emptySet(), IndoorPreference.ANY)
+        val route = RoutePlanner.build(
+            50.7300, 10.4700, PlaceRepository.all(), prefs, countFirstLeg = true
+        )
+        assertTrue(route.stops.isNotEmpty())
+        assertTrue(route.stops.first().walkMinutesFromPrevious > 0)
+        assertTrue(route.totalMinutes <= 240)
+    }
+
+    @Test
     fun tinyBudgetMayProduceEmptyRoute() {
         val prefs = RoutePreferences(1, emptySet(), IndoorPreference.ANY)
         val route = RoutePlanner.build(start.first, start.second, PlaceRepository.all(), prefs)
