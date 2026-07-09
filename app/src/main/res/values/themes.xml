@@ -16,7 +16,6 @@
 
     <style name="Theme.CityFlow" parent="Base.Theme.CityFlow" />
 
-    <!-- Reusable text styles -->
     <style name="TextAppearance.CityFlow.SectionLabel" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textAllCaps">true</item>
         <item name="android:letterSpacing">0.08</item>

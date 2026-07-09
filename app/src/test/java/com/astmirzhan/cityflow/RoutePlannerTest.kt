@@ -15,7 +15,6 @@ class RoutePlannerTest {
 
     @Test
     fun walkMinutesUses5kmh() {
-        // 5 km/h -> 5000 m in 60 min -> ~12 min per km.
         assertEquals(12, RoutePlanner.walkMinutes(1000.0))
     }
 
@@ -57,7 +56,6 @@ class RoutePlannerTest {
 
     @Test
     fun gpsStartCountsWalkToFirstStop() {
-        // Start away from the nearest place so the first leg has a real cost.
         val prefs = RoutePreferences(240, emptySet(), IndoorPreference.ANY)
         val route = RoutePlanner.build(
             50.7300, 10.4700, PlaceRepository.all(), prefs, countFirstLeg = true

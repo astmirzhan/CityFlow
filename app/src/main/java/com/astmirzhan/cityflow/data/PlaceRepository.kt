@@ -3,10 +3,8 @@ package com.astmirzhan.cityflow.data
 import com.astmirzhan.cityflow.model.Place
 import com.astmirzhan.cityflow.model.PlaceCategory
 
-// Local curated places dataset (preloaded city places) for Schmalkalden, Germany.
 object PlaceRepository {
 
-    // City-centre fallback used when no GPS fix is available.
     const val CITY_CENTER_LAT = 50.7212
     const val CITY_CENTER_LNG = 10.4544
 

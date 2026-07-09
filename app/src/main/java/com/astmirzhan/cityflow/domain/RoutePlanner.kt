@@ -16,10 +16,6 @@ object RoutePlanner {
     fun walkMinutes(distanceMeters: Double): Int =
         (distanceMeters / METERS_PER_MINUTE).roundToInt()
 
-    // Greedy nearest-neighbour route that fits inside the available time budget.
-    // countFirstLeg: when the start is the user's real GPS position, the walk to the
-    // first stop is real and is counted; for the abstract city-centre start the
-    // first stop is treated as the beginning of the walk (walk 0).
     fun build(
         startLat: Double,
         startLng: Double,

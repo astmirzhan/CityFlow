@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onChangeCityClicked() {
-        // Saved category filters may not exist in the new city, so reset them.
         prefs.edit().remove(KEY_CATEGORIES).apply()
         selectedCityRepository.clearSelectedCity()
         openCitySelection()
@@ -114,8 +113,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupCategories() {
-        // Only offer categories that actually exist in the selected city, so a
-        // filter can never produce an empty route (e.g. "Old Town" in Berlin).
         val available = PlaceRepository.getPlacesForCity(selectedCity.id)
             .map { it.category }
             .toSet()
@@ -179,8 +176,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchRoute(useGps: Boolean) {
         progress.visibility = View.VISIBLE
-        // Ignore GPS fixes that are unreasonably far from the selected city
-        // (e.g. the emulator's default Googleplex location) and fall back to the city centre.
         val location = if (useGps) lastKnownLocation()?.takeIf { isNearSelectedCity(it) } else null
         if (useGps && location == null) {
             Snackbar.make(root, getString(R.string.location_fallback), Snackbar.LENGTH_SHORT).show()
@@ -257,7 +252,6 @@ class MainActivity : AppCompatActivity() {
         private const val MAX_MINUTES = 240
         private const val STEP_MINUTES = 15
 
-        // A GPS fix further than this from the selected city is treated as invalid.
         private const val MAX_GPS_DISTANCE_METERS = 30_000.0
     }
 }

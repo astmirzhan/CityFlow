@@ -103,8 +103,6 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         )
     }
 
-    // The route is always built with the user's explicit preferences.
-    // Sensor readings are shown as context hints only and never override the user's choice.
     private fun buildRoute(firstStopChoices: Int) {
         val built = RoutePlanner.build(
             startLat = startLat,
@@ -193,8 +191,6 @@ class RouteResultActivity : AppCompatActivity(), SensorEventListener {
         val base = getString(
             R.string.light_status, lux.toInt(), SensorContextAdvisor.lightLabel(lux)
         )
-        // The light sensor drives a non-destructive suggestion: when the user left the
-        // setting on "Any", bright/dark surroundings hint at a better indoor/outdoor choice.
         val suggested = SensorContextAdvisor.refinePreference(basePreferences.indoorPreference, lux)
         lightStatus.text = if (basePreferences.indoorPreference == IndoorPreference.ANY &&
             suggested != IndoorPreference.ANY

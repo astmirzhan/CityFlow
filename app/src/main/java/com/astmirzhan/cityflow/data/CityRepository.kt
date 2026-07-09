@@ -2,7 +2,6 @@ package com.astmirzhan.cityflow.data
 
 import com.astmirzhan.cityflow.model.City
 
-// Local curated city dataset used for the onboarding selection screen.
 object CityRepository {
 
     private val cities = listOf(
@@ -18,7 +17,6 @@ object CityRepository {
             id = "berlin",
             country = "Germany",
             name = "Berlin",
-            // Mitte, close to Museum Island and the central landmarks.
             latitude = 52.5175,
             longitude = 13.3960,
             description = "Germany's vibrant capital with iconic landmarks."
@@ -27,7 +25,6 @@ object CityRepository {
             id = "munich",
             country = "Germany",
             name = "Munich",
-            // Marienplatz, the heart of the old town.
             latitude = 48.1374,
             longitude = 11.5755,
             description = "Bavarian city with historic squares and parks."
@@ -36,7 +33,6 @@ object CityRepository {
             id = "astana",
             country = "Kazakhstan",
             name = "Astana",
-            // Nurzhol Boulevard axis — walking distance to the main landmarks.
             latitude = 51.1282,
             longitude = 71.4270,
             description = "Capital city of Kazakhstan with modern landmarks."
@@ -45,7 +41,6 @@ object CityRepository {
             id = "almaty",
             country = "Kazakhstan",
             name = "Almaty",
-            // Historic centre near Panfilov Park / Arbat — close to the place cluster.
             latitude = 43.2570,
             longitude = 76.9500,
             description = "Large cultural city near the mountains."

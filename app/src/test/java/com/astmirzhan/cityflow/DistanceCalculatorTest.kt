@@ -15,7 +15,6 @@ class DistanceCalculatorTest {
 
     @Test
     fun knownDistanceApproximatelyCorrect() {
-        // Roughly 1 degree of latitude ~ 111 km.
         val d = DistanceCalculator.haversineMeters(50.0, 10.0, 51.0, 10.0)
         assertTrue("expected ~111km, was $d", d in 111_000.0..112_000.0)
     }

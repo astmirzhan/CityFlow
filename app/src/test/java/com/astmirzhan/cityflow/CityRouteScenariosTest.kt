@@ -8,8 +8,6 @@ import com.astmirzhan.cityflow.model.RoutePreferences
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-// End-to-end planner scenarios: every city must produce a non-empty route
-// from its own centre for realistic time budgets and every indoor preference.
 class CityRouteScenariosTest {
 
     private val budgets = listOf(30, 60, 90, 240)

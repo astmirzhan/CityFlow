@@ -14,7 +14,6 @@ object SensorContextAdvisor {
 
     enum class MotionState { STOPPED, WALKING, MOVING }
 
-    // Suggest a refined indoor/outdoor preference from ambient light.
     fun refinePreference(current: IndoorPreference, lux: Float): IndoorPreference {
         if (current != IndoorPreference.ANY) return current
         return when {
@@ -30,7 +29,6 @@ object SensorContextAdvisor {
         else -> "Mixed lighting"
     }
 
-    // Linear acceleration magnitude with gravity removed.
     fun linearMagnitude(x: Float, y: Float, z: Float): Float {
         val magnitude = sqrt(x * x + y * y + z * z)
         return kotlin.math.abs(magnitude - GRAVITY)

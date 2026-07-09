@@ -12,9 +12,6 @@ import android.view.View
 import com.astmirzhan.cityflow.model.WalkingRoute
 import com.google.android.material.color.MaterialColors
 
-// CustomView that renders the route as a clean, evenly-spaced horizontal timeline:
-// Start, then numbered stops on a straight line. Positions are index-based (not
-// geographic), so the line is always straight instead of a crooked map zig-zag.
 class RoutePreviewView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -79,8 +76,6 @@ class RoutePreviewView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
     }
 
-    // showStart: when the route begins at the user's real GPS position, a "You"
-    // node is drawn before the first stop; the city-centre start stays implicit.
     fun setRoute(route: WalkingRoute, showStart: Boolean = false) {
         nodes = buildList {
             if (showStart && route.stops.isNotEmpty()) add(Node("", "You", isStart = true))
@@ -103,7 +98,6 @@ class RoutePreviewView @JvmOverloads constructor(
         val slot = if (nodes.size > 1) usable / (nodes.size - 1) else 0f
         val xs = nodes.indices.map { paddingH + it * slot }
 
-        // Straight connecting line.
         if (nodes.size > 1) {
             canvas.drawLine(xs.first(), lineY, xs.last(), lineY, linePaint)
         }
@@ -118,7 +112,6 @@ class RoutePreviewView @JvmOverloads constructor(
                 canvas.drawText(node.number, x, lineY + 9f, numberPaint)
             }
             val paint = if (node.isStart) startLabelPaint else labelPaint
-            // Keep edge labels inside the view: left-align the first, right-align the last.
             val (align, labelX) = when (i) {
                 0 -> Paint.Align.LEFT to (x - 13f)
                 nodes.lastIndex -> Paint.Align.RIGHT to (x + 22f)

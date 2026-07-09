@@ -3,7 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Brand (vibrant aurora: indigo → violet → pink, warm orange accent) -->
     <color name="cityflow_primary">#FF6366F1</color>
     <color name="cityflow_hero_start">#FF6366F1</color>
     <color name="cityflow_hero_center">#FF9333EA</color>
@@ -12,7 +11,6 @@
     <color name="cityflow_surface">#FFF6F5FF</color>
     <color name="cityflow_text_secondary">#FF5B5F73</color>
 
-    <!-- Light Material3 scheme -->
     <color name="cityflow_on_primary">#FFFFFFFF</color>
     <color name="cityflow_primary_container">#FFE6E6FE</color>
     <color name="cityflow_on_primary_container">#FF2A2172</color>
@@ -21,7 +19,6 @@
     <color name="cityflow_text_primary">#FF1B1B2B</color>
     <color name="cityflow_outline">#FFDFDDF7</color>
 
-    <!-- Dark Material3 scheme -->
     <color name="cityflow_primary_dark">#FFA5B4FC</color>
     <color name="cityflow_on_primary_dark">#FF1E1B4B</color>
     <color name="cityflow_primary_container_dark">#FF3730A3</color>

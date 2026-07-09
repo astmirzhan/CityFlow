@@ -8,7 +8,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.UUID
 
-// Local persistence for generated routes/history via SharedPreferences.
 class RouteHistoryRepository(context: Context) {
 
     private val prefs = context.applicationContext
@@ -40,7 +39,6 @@ class RouteHistoryRepository(context: Context) {
             }
             result
         } catch (e: JSONException) {
-            // Corrupt or outdated data: discard it instead of crashing.
             prefs.edit().remove(KEY_HISTORY).apply()
             emptyList()
         }
